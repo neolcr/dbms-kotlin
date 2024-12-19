@@ -17,7 +17,8 @@ enum class Tipo {
     PUNTO,
     COMA,
     INICIO_NUMERO,
-    SIMBOLO_INCORRECTO
+    SIMBOLO_INCORRECTO,
+    INICIO_DESIGUAL
 }
 
 class AnalisisLexicoException(mensaje: String) : Exception(mensaje)
@@ -65,6 +66,7 @@ fun Char.getTipo(): Tipo = when {
     this.equals('.') -> Tipo.PUNTO
     this.equals('*') -> Tipo.ASTERISCO
     this.equals(';') -> Tipo.PUNTOCOMA
+    this.equals('!') -> Tipo.INICIO_DESIGUAL
     this.equals('(') -> Tipo.INICIO_PARENTESIS
     this.equals(')') -> Tipo.FINAL_PARENTESIS
     this.isDigit() -> Tipo.INICIO_NUMERO
@@ -81,10 +83,72 @@ fun analisisLexicoB(contenido: String): String {
     while (i < contenido.length) {
         val ch = contenido.get(i)
 
-        println("El index: $i  y el char: $ch y el tipo: ${ch.getTipo()}")
+        //println("El index: $i  y el char: $ch y el tipo: ${ch.getTipo()}")
+        
+        when(ch.getTipo()) {
+            Tipo.INICIO_KEYWORD -> {
+                val (j, keyword) = extraerKeyword(i, contenido)
+                i = j
+                println("Keyword: $keyword")
+            }
+            Tipo.INICIO_VARCHAR -> {
+
+            }
+            Tipo.ESPACIO -> {
+
+            }
+            Tipo.OPERADOR -> {
+
+            }
+            Tipo.PUNTOCOMA -> {
+
+            }
+            Tipo.ASTERISCO -> {
+
+            }
+            Tipo.INICIO_PARENTESIS -> {
+
+            }
+            Tipo.FINAL_PARENTESIS -> {
+
+            }
+            Tipo.PUNTO -> {
+
+            }
+            Tipo.COMA -> {
+
+            }
+            Tipo.INICIO_NUMERO -> {
+
+            }
+            Tipo.SIMBOLO_INCORRECTO -> {
+
+            }
+            Tipo.INICIO_DESIGUAL -> {
+
+            }
+        }
+
         i++
     }
 
     return resultado
+
+}
+
+fun extraerKeyword(i: Int, contenido: String) : Pair<Int, String> {
+
+    var resultado = ""
+    var j = i
+
+    while (!contenido.get(j).getTipo().equals(Tipo.ESPACIO)) {
+        resultado += contenido.get(j)
+        j++
+        if (j == contenido.length) {
+            throw AnalisisLexicoException("Inicio Keyword sin final")
+        }
+    }
+
+    return Pair(j, resultado)
 
 }
