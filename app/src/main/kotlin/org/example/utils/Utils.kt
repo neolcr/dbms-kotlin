@@ -1,6 +1,7 @@
 package org.example.utils
 
 import org.example.exceptions.AnalisisLexicoException
+import org.example.exceptions.AnalisisSintacticoException
 
 enum class Tipo {
     ESPACIO,
@@ -39,6 +40,25 @@ fun Char.getTipo(): Tipo = when {
     else -> Tipo.SIMBOLO_INCORRECTO
 
 }
+
+
+fun String.getKeywordTipo(): Keyword.Tipo = when {
+    this.uppercase().equals("SELECT") -> Keyword.Tipo.SELECT
+    this.uppercase().equals("UPDATE") -> Keyword.Tipo.UPDATE
+    this.uppercase().equals("DELETE") -> Keyword.Tipo.DELETE
+    this.uppercase().equals("INSERT") -> Keyword.Tipo.INSERT
+    this.uppercase().equals("CREATE") -> Keyword.Tipo.CREATE
+    this.uppercase().equals("DATABASE") -> Keyword.Tipo.DATABASE
+    this.uppercase().equals("TABLE") -> Keyword.Tipo.TABLE
+    this.uppercase().equals("FROM") -> Keyword.Tipo.FROM
+    this.uppercase().equals("INNER") -> Keyword.Tipo.INNER
+    this.uppercase().equals("JOIN") -> Keyword.Tipo.JOIN
+    this.uppercase().equals("AND") -> Keyword.Tipo.AND
+    this.uppercase().equals("OR") -> Keyword.Tipo.OR
+    this.uppercase().equals("BETWEEN") -> Keyword.Tipo.BETWEEN
+    else -> throw AnalisisSintacticoException("El keyword $this no existe")
+}
+
 
 class Raiz {
     val lista_segmentos: MutableList<Segmento> = mutableListOf()

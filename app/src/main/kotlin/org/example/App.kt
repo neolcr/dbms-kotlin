@@ -3,6 +3,7 @@ import java.nio.file.Paths
 import java.nio.file.Files
 import org.example.lexico.analisisLexicoA
 import org.example.lexico.analisisLexicoB
+import org.example.sintactico.analisisSintacticoA
 
 
 fun main() {
@@ -16,6 +17,9 @@ fun main() {
 
     val lista_final_tokens = analisisLexicoB(contenido) 
     println(lista_final_tokens)
+    
+    analisisSintacticoA(lista_final_tokens) 
+
 }
 
 
