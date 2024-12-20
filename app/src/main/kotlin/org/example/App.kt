@@ -19,7 +19,7 @@ enum class Tipo {
     IGUAL,
     MAYOR,
     MENOR,
-    INICIO_NUMERO,
+    NUMERO,
     SIMBOLO_INCORRECTO,
     INICIO_DESIGUAL
 }
@@ -73,7 +73,7 @@ fun Char.getTipo(): Tipo = when {
     this.equals('>') -> Tipo.MAYOR
     this.equals('<') -> Tipo.MENOR
     this.equals('=') -> Tipo.IGUAL
-    this.isDigit() -> Tipo.INICIO_NUMERO
+    this.isDigit() -> Tipo.NUMERO
     else -> Tipo.SIMBOLO_INCORRECTO
 
 }
@@ -130,22 +130,33 @@ fun analisisLexicoB(contenido: String): MutableList<String> {
 
             }
             Tipo.INICIO_PARENTESIS -> {
+                println("Inicio parentesis: $ch")
+                lista_final_tokens.add("(")
 
             }
             Tipo.FINAL_PARENTESIS -> {
+                println("Final parentesis: $ch")
+                lista_final_tokens.add(")")
 
             }
             Tipo.PUNTO -> {
+                println("Punto: $ch")
+                lista_final_tokens.add(".")
 
             }
             Tipo.COMA -> {
+                println("Coma: $ch")
+                lista_final_tokens.add(",")
 
             }
-            Tipo.INICIO_NUMERO -> {
-
+            Tipo.NUMERO -> {
+                var (j, numero) = extraerNumero(i, contenido)
+                i = j 
+                println("Numero: $numero")
+                lista_final_tokens.add(numero)
             }
             Tipo.SIMBOLO_INCORRECTO -> {
-
+                throw AnalisisLexicoException("Simbolo incorrecto: $ch")
             }
             Tipo.INICIO_DESIGUAL -> {
                 var (j , desigual) = extraerDesigual(i, contenido)
@@ -180,6 +191,23 @@ fun extraerIdentificador(i: Int, contenido: String) : Pair<Int, String> {
 
 }
 
+fun extraerNumero(i: Int, contenido: String) : Pair<Int, String> {
+
+    var resultado = ""
+    var j = i
+
+    while (contenido.get(j).getTipo().equals(Tipo.NUMERO)) {
+        resultado += contenido.get(j)
+        j++
+        if (j == contenido.length) {
+            throw AnalisisLexicoException("Inicio numero sin final")
+        }
+    }
+
+    return Pair(j, resultado)
+
+}
+
 fun extraerVarchar(i: Int, contenido: String) : Pair<Int, String> {
 
     var resultado = ""
@@ -198,12 +226,10 @@ fun extraerVarchar(i: Int, contenido: String) : Pair<Int, String> {
 }
 
 fun extraerDesigual(i: Int, contenido: String) : Pair<Int, String> {
-    println("i: $i ${contenido.get(i)}")
-    println("i+2: ${i+2} ${contenido.get(i + 2)}")
     return if (contenido.get(i + 2).equals('=')) {
        Pair(i + 2, "!=")
     } else {
-        throw AnalisisLexicoException("")
+        throw AnalisisLexicoException("Error al extraer simbolo '!='")
     }
 
 }
