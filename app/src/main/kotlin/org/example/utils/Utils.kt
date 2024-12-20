@@ -56,7 +56,7 @@ fun String.getKeywordTipo(): Keyword.Tipo = when {
     this.uppercase().equals("AND") -> Keyword.Tipo.AND
     this.uppercase().equals("OR") -> Keyword.Tipo.OR
     this.uppercase().equals("BETWEEN") -> Keyword.Tipo.BETWEEN
-    else -> throw AnalisisSintacticoException("El keyword $this no existe")
+    else -> Keyword.Tipo.NADA 
 }
 
 
@@ -118,31 +118,35 @@ class Select: Accion() {
     override fun validar() :Boolean {
         val primerNodo = lista_nodos.get(0)
         if (primerNodo !is Keyword) {
+            println("Primer nodo no es keyword")
             return false
         }
-        val tipo = (primerNodo as Keyword).tipo
-        if (!tipo.equals(Keyword.Tipo.SELECT)) {
+        
+        if (!primerNodo.tipo.equals(Keyword.Tipo.SELECT)) {
+            println("Primer nodo no es select ")
             return false
         }
         val segundoNodo = lista_nodos.get(1)
         if (segundoNodo !is Seleccion) {
+            println("Segundo nodo no es seleccion")
             return false 
         }
-        val seleccion = (segundoNodo as Seleccion)
-        if (!seleccion.asterisco && seleccion.lista_columnas.isEmpty()) {
+        if (!segundoNodo.asterisco && segundoNodo.lista_columnas.isEmpty()) {
+            println("Segundo nodo tiene problema con asterisco o columnas")
             return false
         }
         // TODO comprobar si las columnas y la tabla existen y sino retornar false 
 
         val tercerNodo = lista_nodos.get(2)
         if (tercerNodo !is Tabla) {
+            println("Tercer nodo no es tabla")
             return false
         }
-        val tabla = (tercerNodo as Tabla) 
-        if (tabla.identificador.isBlank()){
+        if (tercerNodo.identificador.isBlank()){
+            println("Tercer nodo no tiene valor")
             return false 
         }
-        return false;
+        return true;
     }
 }
 
@@ -153,14 +157,14 @@ class Delete: Accion() {
 } 
 
 open class Nodo {
-    val identificador: String = ""
-    val valor: String = ""
-    val anterior: Nodo? = null 
-    val siguiente: Nodo? = null 
+    var identificador: String = ""
+    var valor: String = ""
+    var anterior: Nodo? = null 
+    var siguiente: Nodo? = null 
 }
 
 class Keyword(val tipo: Keyword.Tipo): Nodo() {
-    enum class Tipo {
+    public enum class Tipo {
         SELECT,
         UPDATE,
         INSERT,
@@ -173,13 +177,19 @@ class Keyword(val tipo: Keyword.Tipo): Nodo() {
         JOIN,
         AND,
         OR,
-        BETWEEN
-
+        BETWEEN,
+        NADA
+    }
+    override fun toString():String {
+        return "Keyword: { tipo: $tipo }"
     }
 }
 class Seleccion: Nodo() {
-    val asterisco: Boolean = false
+    var asterisco: Boolean = false
     val lista_columnas: MutableList<Columna> = mutableListOf()
+    override fun toString():String {
+        return "Seleccion: { asterisco: $asterisco, listaColumnas: $lista_columnas }"
+    }
 }
 class Operador: Nodo() {
     public enum class Validos(val simbolo: String) {
@@ -191,10 +201,11 @@ class Operador: Nodo() {
     }
 }
 class Columna: Nodo() {
-
 }
 
 class Tabla: Nodo() {
-
+    override fun toString():String {
+        return "Tabla: { nombre: $identificador }"
+    }
 }
 
