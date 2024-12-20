@@ -45,7 +45,7 @@ class Raiz {
 }
 
 class Segmento {
-    val lista_nodos: MutableList<Accion> = mutableListOf()
+    val lista_acciones: MutableList<Accion> = mutableListOf()
 }
 
 
@@ -53,6 +53,8 @@ open class Accion {
     val lista_nodos: MutableList<Nodo> = mutableListOf()
 }
 
+class CrearDB: Accion() {}
+class CrearTabla: Accion() {}
 class Insert: Accion() {}
 class Update: Accion() {}
 class Select: Accion() {}
@@ -66,5 +68,36 @@ open class Nodo {
 }
 
 class Keyword: Nodo() {
+    public enum class Validos {
+        SELECT,
+        UPDATE,
+        INSERT,
+        DELETE,
+        CREATE,
+        DATABASE,
+        TABLE,
+        FROM,
+        INNER,
+        JOIN,
+        AND,
+        OR,
+        BETWEEN
+
+    }
+}
+class Seleccion: Nodo() {
+    val asterisco: Boolean = false,
+    val lista_columnas: MutableList<Columna> = mutableListOf()
+}
+class Operador: Nodo() {
+    public enum class Validos(val simbolo: String) {
+        IGUAL("="),
+        DESIGUAL("!="),
+        MAYOR(">"),
+        MENOR("<"),
+
+    }
+}
+class Columna: Nodo() {
 
 }
