@@ -4,24 +4,26 @@ import java.nio.file.Files
 import org.example.analisisLexicoA
 import org.example.analisisLexicoB
 import org.example.getTipo
+import org.example.exceptions.AnalisisLexicoException
 
 enum class Tipo {
     ESPACIO,
-    INICIO_KEYWORD,
-    INICIO_VARCHAR,
-    OPERADOR,
+    INICIO_IDENTIFICADOR,
+    COMILLA_SIMPLE,
     PUNTOCOMA,
     ASTERISCO,
     INICIO_PARENTESIS,
     FINAL_PARENTESIS,
     PUNTO,
     COMA,
+    IGUAL,
+    MAYOR,
+    MENOR,
     INICIO_NUMERO,
     SIMBOLO_INCORRECTO,
     INICIO_DESIGUAL
 }
 
-class AnalisisLexicoException(mensaje: String) : Exception(mensaje)
 
 fun main() {
     val currentDirFile = Paths.get("src/main/kotlin/org/example/query.sql").toAbsolutePath() 			
@@ -60,8 +62,8 @@ fun analisisLexicoA(contenido: String): String {
 
 fun Char.getTipo(): Tipo = when {
     this.isWhitespace() -> Tipo.ESPACIO
-    this.isLetter() -> Tipo.INICIO_KEYWORD
-    this.equals('\'') -> Tipo.INICIO_VARCHAR
+    this.isLetter() -> Tipo.INICIO_IDENTIFICADOR
+    this.equals('\'') -> Tipo.COMILLA_SIMPLE
     this.equals(',') -> Tipo.COMA
     this.equals('.') -> Tipo.PUNTO
     this.equals('*') -> Tipo.ASTERISCO
@@ -69,35 +71,47 @@ fun Char.getTipo(): Tipo = when {
     this.equals('!') -> Tipo.INICIO_DESIGUAL
     this.equals('(') -> Tipo.INICIO_PARENTESIS
     this.equals(')') -> Tipo.FINAL_PARENTESIS
+    this.equals('>') -> Tipo.MAYOR
+    this.equals('<') -> Tipo.MENOR
+    this.equals('=') -> Tipo.IGUAL
     this.isDigit() -> Tipo.INICIO_NUMERO
-    "><=".contains(this) -> Tipo.OPERADOR
     else -> Tipo.SIMBOLO_INCORRECTO
 
 }
 
 
-fun analisisLexicoB(contenido: String): String {
-    var resultado = ""
+fun analisisLexicoB(contenido: String): MutableList<String> {
     var i = 0
+    var lista_final_tokens = mutableListOf<String>()
 
     while (i < contenido.length) {
+        //println("The len: ${contenido.length} ,  index: $i")
         val ch = contenido.get(i)
-
-        //println("El index: $i  y el char: $ch y el tipo: ${ch.getTipo()}")
         
         when(ch.getTipo()) {
-            Tipo.INICIO_KEYWORD -> {
-                val (j, keyword) = extraerKeyword(i, contenido)
+            Tipo.INICIO_IDENTIFICADOR -> {
+                val (j, identificador) = extraerIdentificador(i, contenido)
                 i = j
-                println("Keyword: $keyword")
+                println("Identificador: $identificador")
+                lista_final_tokens.add(identificador)
             }
-            Tipo.INICIO_VARCHAR -> {
+            Tipo.COMILLA_SIMPLE -> {
+                val (j, varchar) = extraerVarchar(i, contenido)
+                i = j
+                println("Varchar: $varchar")
+                lista_final_tokens.add(varchar)
 
             }
             Tipo.ESPACIO -> {
+                println("Espacio")
+            }
+            Tipo.IGUAL -> {
 
             }
-            Tipo.OPERADOR -> {
+            Tipo.MAYOR -> {
+
+            }
+            Tipo.MENOR -> {
 
             }
             Tipo.PUNTOCOMA -> {
@@ -132,11 +146,12 @@ fun analisisLexicoB(contenido: String): String {
         i++
     }
 
-    return resultado
+    println(lista_final_tokens)
+    return lista_final_tokens
 
 }
 
-fun extraerKeyword(i: Int, contenido: String) : Pair<Int, String> {
+fun extraerIdentificador(i: Int, contenido: String) : Pair<Int, String> {
 
     var resultado = ""
     var j = i
@@ -145,10 +160,27 @@ fun extraerKeyword(i: Int, contenido: String) : Pair<Int, String> {
         resultado += contenido.get(j)
         j++
         if (j == contenido.length) {
-            throw AnalisisLexicoException("Inicio Keyword sin final")
+            throw AnalisisLexicoException("Inicio identificador sin final")
         }
     }
 
+    return Pair(j, resultado)
+
+}
+
+fun extraerVarchar(i: Int, contenido: String) : Pair<Int, String> {
+
+    var resultado = ""
+    var j = i
+
+    while (j == i || !contenido.get(j).getTipo().equals(Tipo.COMILLA_SIMPLE)) {
+        resultado += contenido.get(j)
+        j++
+        if (j == contenido.length) {
+            throw AnalisisLexicoException("Inicio varchar sin final")
+        }
+    }
+    resultado += '\''
     return Pair(j, resultado)
 
 }
