@@ -14,7 +14,8 @@ fun main() {
     contenido = analisisLexicoA(contenido) 
     println("Segunda lectura: $contenido")
 
-    val resultado = analisisLexicoB(contenido) 
+    val lista_final_tokens = analisisLexicoB(contenido) 
+    println(lista_final_tokens)
 }
 
 

@@ -1,6 +1,4 @@
 package org.example.lexico
-import java.nio.file.Paths
-import java.nio.file.Files
 import org.example.utils.Tipo
 import org.example.utils.getTipo
 import org.example.exceptions.AnalisisLexicoException
@@ -116,7 +114,6 @@ fun analisisLexicoB(contenido: String): MutableList<String> {
         i++
     }
 
-    println(lista_final_tokens)
     return lista_final_tokens
 
 }

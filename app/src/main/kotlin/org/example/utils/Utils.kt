@@ -40,4 +40,31 @@ fun Char.getTipo(): Tipo = when {
 
 }
 
+class Raiz {
+    val lista_segmentos: MutableList<Segmento> = mutableListOf()
+}
 
+class Segmento {
+    val lista_nodos: MutableList<Accion> = mutableListOf()
+}
+
+
+open class Accion {
+    val lista_nodos: MutableList<Nodo> = mutableListOf()
+}
+
+class Insert: Accion() {}
+class Update: Accion() {}
+class Select: Accion() {}
+class Delete: Accion() {} 
+
+open class Nodo {
+    val identificador: String = "",
+    val valor: String = "",
+    val anterior: Nodo = Nodo(), 
+    val siguiente: Nodo = Nodo()
+}
+
+class Keyword: Nodo() {
+
+}
