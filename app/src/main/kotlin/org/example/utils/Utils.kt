@@ -61,10 +61,10 @@ class Select: Accion() {}
 class Delete: Accion() {} 
 
 open class Nodo {
-    val identificador: String = "",
-    val valor: String = "",
-    val anterior: Nodo = Nodo(), 
-    val siguiente: Nodo = Nodo()
+    val identificador: String = ""
+    val valor: String = ""
+    val anterior: Nodo? = null 
+    val siguiente: Nodo? = null 
 }
 
 class Keyword: Nodo() {
@@ -86,7 +86,7 @@ class Keyword: Nodo() {
     }
 }
 class Seleccion: Nodo() {
-    val asterisco: Boolean = false,
+    val asterisco: Boolean = false
     val lista_columnas: MutableList<Columna> = mutableListOf()
 }
 class Operador: Nodo() {
