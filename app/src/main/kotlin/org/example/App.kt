@@ -34,8 +34,7 @@ fun main() {
     contenido = analisisLexicoA(contenido) 
     println("Segunda lectura: $contenido")
 
-    contenido = analisisLexicoB(contenido) 
-    println("Tercera lectura: $contenido")
+    val resultado = analisisLexicoB(contenido) 
 }
 
 
@@ -106,18 +105,28 @@ fun analisisLexicoB(contenido: String): MutableList<String> {
                 println("Espacio")
             }
             Tipo.IGUAL -> {
+                println("Igual: $ch")
+                lista_final_tokens.add("=")
 
             }
             Tipo.MAYOR -> {
+                println("Mayor: $ch")
+                lista_final_tokens.add(">")
 
             }
             Tipo.MENOR -> {
+                println("Menor: $ch")
+                lista_final_tokens.add("<")
 
             }
             Tipo.PUNTOCOMA -> {
+                println("Punto y coma: $ch")
+                lista_final_tokens.add(";")
 
             }
             Tipo.ASTERISCO -> {
+                println("Asterisco: $ch")
+                lista_final_tokens.add("*")
 
             }
             Tipo.INICIO_PARENTESIS -> {
@@ -139,7 +148,10 @@ fun analisisLexicoB(contenido: String): MutableList<String> {
 
             }
             Tipo.INICIO_DESIGUAL -> {
-
+                var (j , desigual) = extraerDesigual(i, contenido)
+                i = j
+                println("Varchar: $desigual")
+                lista_final_tokens.add(desigual)
             }
         }
 
@@ -182,5 +194,16 @@ fun extraerVarchar(i: Int, contenido: String) : Pair<Int, String> {
     }
     resultado += '\''
     return Pair(j, resultado)
+
+}
+
+fun extraerDesigual(i: Int, contenido: String) : Pair<Int, String> {
+    println("i: $i ${contenido.get(i)}")
+    println("i+2: ${i+2} ${contenido.get(i + 2)}")
+    return if (contenido.get(i + 2).equals('=')) {
+       Pair(i + 2, "!=")
+    } else {
+        throw AnalisisLexicoException("")
+    }
 
 }
