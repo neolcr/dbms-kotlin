@@ -42,10 +42,28 @@ fun Char.getTipo(): Tipo = when {
 
 class Raiz {
     val lista_segmentos: MutableList<Segmento> = mutableListOf()
+    
+    fun validar(): Boolean {
+        lista_segmentos.forEach{
+            if (!it.validar()) {
+                return false 
+            }
+        }
+        return true 
+    }
 }
 
 class Segmento {
     val lista_acciones: MutableList<Accion> = mutableListOf()
+
+    fun validar(): Boolean {
+        lista_acciones.forEach{
+            if (!it.validar()) {
+                return false 
+            }
+        }
+        return true 
+    }
 }
 
 
