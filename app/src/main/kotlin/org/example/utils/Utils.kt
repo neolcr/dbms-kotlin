@@ -49,16 +49,70 @@ class Segmento {
 }
 
 
-open class Accion {
+abstract class Accion {
     val lista_nodos: MutableList<Nodo> = mutableListOf()
+    abstract fun validar(): Boolean
 }
 
-class CrearDB: Accion() {}
-class CrearTabla: Accion() {}
-class Insert: Accion() {}
-class Update: Accion() {}
-class Select: Accion() {}
-class Delete: Accion() {} 
+class CrearDB: Accion() {
+    override fun validar() :Boolean {
+        return false;
+    }
+}
+class CrearTabla: Accion() {
+    override fun validar() :Boolean {
+        return false;
+    }
+}
+class Insert: Accion() {
+    override fun validar() :Boolean {
+        return false;
+    }
+}
+
+class Update: Accion() {
+    override fun validar() :Boolean {
+        return false;
+    }
+}
+
+class Select: Accion() {
+    override fun validar() :Boolean {
+        val primerNodo = lista_nodos.get(0)
+        if (primerNodo !is Keyword) {
+            return false
+        }
+        val tipo = (primerNodo as Keyword).tipo
+        if (!tipo.equals(Keyword.Tipo.SELECT)) {
+            return false
+        }
+        val segundoNodo = lista_nodos.get(1)
+        if (segundoNodo !is Seleccion) {
+            return false 
+        }
+        val seleccion = (segundoNodo as Seleccion)
+        if (!seleccion.asterisco && seleccion.lista_columnas.isEmpty()) {
+            return false
+        }
+        // TODO comprobar si las columnas y la tabla existen y sino retornar false 
+
+        val tercerNodo = lista_nodos.get(2)
+        if (tercerNodo !is Tabla) {
+            return false
+        }
+        val tabla = (tercerNodo as Tabla) 
+        if (tabla.identificador.isBlank()){
+            return false 
+        }
+        return false;
+    }
+}
+
+class Delete: Accion() {
+    override fun validar() :Boolean {
+        return false;
+    }
+} 
 
 open class Nodo {
     val identificador: String = ""
@@ -67,8 +121,8 @@ open class Nodo {
     val siguiente: Nodo? = null 
 }
 
-class Keyword: Nodo() {
-    public enum class Validos {
+class Keyword(val tipo: Keyword.Tipo): Nodo() {
+    enum class Tipo {
         SELECT,
         UPDATE,
         INSERT,
@@ -101,3 +155,8 @@ class Operador: Nodo() {
 class Columna: Nodo() {
 
 }
+
+class Tabla: Nodo() {
+
+}
+
