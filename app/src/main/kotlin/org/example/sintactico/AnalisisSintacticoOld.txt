@@ -1,6 +1,4 @@
 package org.example.sintactico
-import org.example.utils.Tipo
-import org.example.utils.getTipo
 import org.example.utils.getKeywordTipo
 import org.example.utils.*
 import org.example.exceptions.AnalisisSintacticoException
