@@ -4,7 +4,7 @@ import org.example.utils.getTipo
 import org.example.exceptions.AnalisisLexicoException
 
 
-fun analisisLexicoA(contenido: String): String {
+fun analisisLexicoFaseA(contenido: String): String {
     var resultado = ""
     val simbolos_validos = "*()<>=.,;"
     val simbolos_incorrectos = "$#"
@@ -24,7 +24,7 @@ fun analisisLexicoA(contenido: String): String {
     return resultado
 }
 
-fun analisisLexicoB(contenido: String): MutableList<String> {
+fun analisisLexicoFaseB(contenido: String): MutableList<String> {
     var i = 0
     var lista_final_tokens = mutableListOf<String>()
 

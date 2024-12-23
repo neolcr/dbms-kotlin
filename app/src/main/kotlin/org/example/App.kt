@@ -1,9 +1,9 @@
 package org.example
 import java.nio.file.Paths
 import java.nio.file.Files
-import org.example.lexico.analisisLexicoA
-import org.example.lexico.analisisLexicoB
-import org.example.sintactico.analisisSintacticoA
+import org.example.lexico.analisisLexicoFaseA
+import org.example.lexico.analisisLexicoFaseB
+import org.example.sintactico.analisisSintactico
 
 
 fun main() {
@@ -12,14 +12,14 @@ fun main() {
 	var contenido = Files.readAllLines(currentDirFile).joinToString("");
     println("Primera lectura: $contenido")
 
-    contenido = analisisLexicoA(contenido) 
+    contenido = analisisLexicoFaseA(contenido)
     println("Segunda lectura: $contenido")
 
-    val lista_final_tokens = analisisLexicoB(contenido) 
+    val lista_final_tokens = analisisLexicoFaseB(contenido)
     println(lista_final_tokens)
     
-    analisisSintacticoA(lista_final_tokens) 
-
+    val estructura = analisisSintactico(lista_final_tokens)
+    println("Final structure: $estructura")
 }
 
 
