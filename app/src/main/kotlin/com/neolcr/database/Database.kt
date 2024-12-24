@@ -1,10 +1,14 @@
 package com.neolcr.database
 
+import kotlinx.serialization.Contextual
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.File
+import javax.xml.crypto.Data
 
+
+@Serializable
 data class Column(
     val name: String,
     val type: DataType,
@@ -16,16 +20,35 @@ enum class DataType {
     INT, TEXT, REAL, BLOB
 }
 
+@Serializable
 data class Table(
     val name: String,
     val columns: List<Column>
 )
 
+@Serializable
 class Database(val name: String) {
     val tables = mutableMapOf<String, Table>()
     val data = mutableMapOf<String, MutableList<Row>>()
 
-    data class Row(val values: Map<String, Any?>)
+    @Serializable
+    data class Row(val values: Map<String, Value>)
+
+    @Serializable
+    sealed class Value {
+
+        @Serializable
+        data class StringValue(val value: String): Value()
+
+        @Serializable
+        data class IntValue(val value: Int): Value()
+
+        @Serializable
+        data class BooleanValue(val value: Boolean): Value()
+
+        @Serializable
+        data class DoubleValue(val value: Double): Value()
+    }
 
     fun createTable(table: Table) {
         if (tables.containsKey(table.name)) {
@@ -35,7 +58,7 @@ class Database(val name: String) {
         data[table.name] = mutableListOf() // Initialize empty storage for rows
     }
 
-    fun insert(tableName: String, row: Map<String, Any?>) {
+    fun insert(tableName: String, row: Map<String, Value>) {
         val table = tables[tableName] ?: throw IllegalArgumentException("Table $tableName does not exist.")
         val rows = data[tableName] ?: throw IllegalStateException("No storage initialized for $tableName.")
 
@@ -95,11 +118,11 @@ fun testCreateDatabase(){
     db.createTable(userTable)
 
     // Insert rows
-    db.insert("Users", mapOf("id" to 1, "name" to "Alice", "email" to "alice@example.com"))
-    db.insert("Users", mapOf("id" to 2, "name" to "Bob", "email" to "bob@example.com"))
+    db.insert("Users", mapOf("id" to Database.Value.IntValue(1), "name" to Database.Value.StringValue("Alice"), "email" to Database.Value.StringValue("alice@example.com")))
+    db.insert("Users", mapOf("id" to Database.Value.IntValue(22), "name" to Database.Value.StringValue("Bob"), "email" to Database.Value.StringValue("bob@example.com")))
 
     // Query data
-    val results = db.query("Users") { row -> row.values["id"] == 1 }
+    val results = db.query("Users") { row -> row.values["id"] == Database.Value.IntValue(1) }
     println(results)
 
     // Save to file

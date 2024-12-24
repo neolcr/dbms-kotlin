@@ -1,0 +1,60 @@
+{
+  "name": "MyDatabase",
+  "tables": {
+    "Users": {
+      "name": "Users",
+      "columns": [
+        {
+          "name": "id",
+          "type": "INT",
+          "isPrimaryKey": true
+        },
+        {
+          "name": "name",
+          "type": "TEXT"
+        },
+        {
+          "name": "email",
+          "type": "TEXT",
+          "isUnique": true
+        }
+      ]
+    }
+  },
+  "data": {
+    "Users": [
+      {
+        "values": {
+          "id": {
+            "type": "com.neolcr.database.Database.Value.IntValue",
+            "value": 1
+          },
+          "name": {
+            "type": "com.neolcr.database.Database.Value.StringValue",
+            "value": "Alice"
+          },
+          "email": {
+            "type": "com.neolcr.database.Database.Value.StringValue",
+            "value": "alice@example.com"
+          }
+        }
+      },
+      {
+        "values": {
+          "id": {
+            "type": "com.neolcr.database.Database.Value.IntValue",
+            "value": 22
+          },
+          "name": {
+            "type": "com.neolcr.database.Database.Value.StringValue",
+            "value": "Bob"
+          },
+          "email": {
+            "type": "com.neolcr.database.Database.Value.StringValue",
+            "value": "bob@example.com"
+          }
+        }
+      }
+    ]
+  }
+}
