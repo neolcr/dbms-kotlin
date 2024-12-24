@@ -1,7 +1,7 @@
-package org.example.lexico
-import org.example.utils.Tipo
-import org.example.utils.getTipo
-import org.example.exceptions.AnalisisLexicoException
+package com.neolcr.lexico
+import com.neolcr.utils.Tipo
+import com.neolcr.utils.getTipo
+import com.neolcr.exceptions.AnalisisLexicoException
 
 
 fun analisisLexicoFaseA(contenido: String): String {

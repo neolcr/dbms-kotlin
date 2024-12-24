@@ -1,0 +1,38 @@
+{
+  "degree": 3,
+  "root": {
+    "keys": [
+      70
+    ],
+    "values": [
+      "Value 20"
+    ],
+    "children": [
+      {
+        "keys": [
+          5,
+          10,
+          20
+        ],
+        "values": [
+          "Value 70",
+          "Value 10",
+          "Value 40"
+        ]
+      },
+      {
+        "keys": [
+          90,
+          140,
+          200
+        ],
+        "values": [
+          "Value 60",
+          "Value 50",
+          "Value 30"
+        ]
+      }
+    ],
+    "isLeaf": false
+  }
+}

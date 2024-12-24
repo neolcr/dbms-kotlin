@@ -1,6 +1,6 @@
-package org.example.sintactico
+package com.neolcr.sintactico
 
-import org.example.exceptions.AnalisisSintacticoException
+import com.neolcr.exceptions.AnalisisSintacticoException
 import java.util.logging.Logger
 import java.util.stream.Collectors
 import kotlinx.serialization.json.*
@@ -17,12 +17,17 @@ fun getTree(): MutableList<SqlNodeTree>  {
     list.add(SqlNodeTree("", Kind.TABLE, Kind.FROM, Kind.SEMICOLON))
     list.add(SqlNodeTree(";", Kind.SEMICOLON, Kind.TABLE, Kind.END))
     val encodeToJsonElement: JsonElement = Json.encodeToJsonElement(list)
-    File("localtree.json").writeText(encodeToJsonElement.toString())
+    File("structure.json").writeText(encodeToJsonElement.toString())
     return list
 }
 
+fun getStructure(): MutableList<SqlNodeTree> {
+    val json = File("structure.json").readText()
+    return Json.decodeFromString(json)
+}
+
 fun analisisSintactico(elements: MutableList<String> ): SqlNodeTree {
-    val list = getTree()
+    val list = getStructure()
     var futuresMatchingValueOrType: List<SqlNodeTree>
     var matchCurrentValue = list.stream()
         .filter { it: SqlNodeTree -> it.value.equals(list.first().value, ignoreCase = true) }
@@ -57,28 +62,10 @@ fun analisisSintactico(elements: MutableList<String> ): SqlNodeTree {
         val nextTypes = matchCurrentValue.stream().map { it: SqlNodeTree -> it.nextKind }.toList()
         val nextValues = matchCurrentValue.stream().map { it: SqlNodeTree -> it.nextValue }.toList()
 
-        pushNode(root, matchCurrentValue.first())
-
-        if (matchCurrentValue.isEmpty()) {
-            val tables = futuresMatchingValueOrType.stream()
-                .filter { it: SqlNodeTree -> it.kind == Kind.TABLE }
-                .toList()
-
-            if (tables.size > 1) {
-                throw RuntimeException("No tiene sentido que haya mas de una tabla")
-            } else if (tables.isEmpty()) {
-                println("Element: $element")
-                throw RuntimeException("No tiene sentido que ninguna sea tabla")
-            } else {
-                val table: SqlNodeTree = tables.first()
-                if (table.previousKind == Kind.FROM) {
-                    table.value = element
-                } else {
-                    throw RuntimeException("Encontrada declaracion de tabla sin FROM")
-                }
-                //throw new RuntimeException(("El element no existe: " + element));
-            }
+        if (matchCurrentValue.first().kind.equals(Kind.TABLE)){
+            matchCurrentValue.first().value = element
         }
+        pushNode(root, matchCurrentValue.first())
 
         futuresMatchingValueOrType = list.stream()
             .filter { it: SqlNodeTree -> nextTypes.contains(it.kind) || nextValues.contains(it.value) }
@@ -90,6 +77,8 @@ fun analisisSintactico(elements: MutableList<String> ): SqlNodeTree {
             println("Collected tiene mas de un elemento: $futuresMatchingValueOrType")
         }
     }
+    val finalStructure = Json.encodeToJsonElement(root)
+    File("final-structure.json").writeText(finalStructure.toString())
     return root
 }
 

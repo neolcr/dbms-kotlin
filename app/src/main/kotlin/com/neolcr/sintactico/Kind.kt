@@ -1,4 +1,4 @@
-package org.example.sintactico
+package com.neolcr.sintactico
 
 
 enum class Kind {

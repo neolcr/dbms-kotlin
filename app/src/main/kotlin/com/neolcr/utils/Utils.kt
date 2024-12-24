@@ -1,4 +1,4 @@
-package org.example.utils
+package com.neolcr.utils
 
 enum class Tipo {
     ESPACIO,

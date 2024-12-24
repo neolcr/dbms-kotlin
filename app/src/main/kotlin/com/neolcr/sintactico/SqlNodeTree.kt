@@ -1,4 +1,4 @@
-package org.example.sintactico
+package com.neolcr.sintactico
 
 import kotlinx.serialization.Serializable
 //import java.util.regex.Matcher
