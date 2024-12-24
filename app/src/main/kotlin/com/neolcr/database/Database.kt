@@ -1,11 +1,12 @@
 package com.neolcr.database
 
-import kotlinx.serialization.Contextual
+import com.neolcr.btree.BTree
+import com.neolcr.btree.SerializableKey
+import com.neolcr.database.Database.Value
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 import java.io.File
-import javax.xml.crypto.Data
 
 
 @Serializable
@@ -75,6 +76,42 @@ class Database(val name: String) {
         val rows = data[tableName] ?: throw IllegalArgumentException("Table $tableName does not exist.")
         return rows.filter(where)
     }
+    // add indexing with b-trees
+    val indexes = mutableMapOf<String, BTree<SerializableKey, Row>>()
+
+
+    fun createIndex(tableName: String, columnName: String) {
+        val table = tables[tableName]
+            ?: throw IllegalArgumentException("Table $tableName does not exist.")
+        val column = table.columns.find { it.name == columnName }
+            ?: throw IllegalArgumentException("Column $columnName does not exist in table $tableName.")
+
+        val bTree = BTree<SerializableKey, Row>(degree = 3)
+        data[tableName]?.forEach { row ->
+            val value = row.values[columnName]
+                ?: throw IllegalStateException("Row missing value for column $columnName")
+            val key = valueToSerializableKey(value) // Map value to SerializableKey
+            bTree.insert(key, row)
+        }
+        indexes["$tableName.$columnName"] = bTree
+    }
+
+    fun queryByIndex(tableName: String, columnName: String, value: Database.Value): Row? {
+        val key = valueToSerializableKey(value) // Map value to SerializableKey
+        return indexes["$tableName.$columnName"]?.search(key)
+    }
+
+    fun valueToSerializableKey(value: Database.Value): SerializableKey {
+        return when (value) {
+            is Database.Value.IntValue -> SerializableKey.IntKey(value.value)
+            is Database.Value.StringValue -> SerializableKey.StringKey(value.value)
+            is Database.Value.DoubleValue -> SerializableKey.DoubleKey(value.value)
+            is Database.Value.BooleanValue -> throw IllegalArgumentException("BooleanValue cannot be used as an index key")
+        }
+    }
+
+
+
 }
 
 @Serializable
@@ -118,41 +155,20 @@ fun testCreateDatabase(){
     db.createTable(userTable)
 
     // Insert rows
-    db.insert("Users", mapOf("id" to Database.Value.IntValue(1), "name" to Database.Value.StringValue("Alice"), "email" to Database.Value.StringValue("alice@example.com")))
-    db.insert("Users", mapOf("id" to Database.Value.IntValue(22), "name" to Database.Value.StringValue("Bob"), "email" to Database.Value.StringValue("bob@example.com")))
+    db.insert("Users", mapOf("id" to Value.IntValue(1), "name" to Value.StringValue("Alice"), "email" to Value.StringValue("alice@example.com")))
+    db.insert("Users", mapOf("id" to Value.IntValue(22), "name" to Value.StringValue("Bob"), "email" to Value.StringValue("bob@example.com")))
 
     // Query data
-    val results = db.query("Users") { row -> row.values["id"] == Database.Value.IntValue(1) }
+    val results = db.query("Users") { row -> row.values["id"] == Value.IntValue(1) }
     println(results)
 
     // Save to file
     db.saveToFile("database.json")
-}
-
-/// add indexing with b-trees
-/*private val indexes = mutableMapOf<String, BTree<Any, Database.Row>>()
-
-fun createIndex(tableName: String, columnName: String) {
-    val table = tables[tableName] ?: throw IllegalArgumentException("Table $tableName does not exist.")
-    val column = table.columns.find { it.name == columnName }
-        ?: throw IllegalArgumentException("Column $columnName does not exist in table $tableName.")
-
-    val bTree = BTree<Any, Database.Row>(degree = 3)
-    data[tableName]?.forEach { row ->
-        val key = row.values[columnName] ?: throw IllegalStateException("Row missing value for column $columnName")
-        bTree.insert(key, row)
-    }
-    indexes["$tableName.$columnName"] = bTree
-}
-
-fun queryByIndex(tableName: String, columnName: String, value: Any): Database.Row? {
-    return indexes["$tableName.$columnName"]?.search(value)
-}
-
-// Create an index on the "id" column
-db.createIndex("Users", "id")
+    // Create an index on the "id" column
+    db.createIndex("Users", "id")
 
 // Query using the index
-val user = db.queryByIndex("Users", "id", 1)
-println(user) // Row with id = 1
-*/
+    val user = db.queryByIndex("Users", "id", Value.IntValue(1))
+    println("User->>>>>>> $user") // Row with id = 1
+}
+

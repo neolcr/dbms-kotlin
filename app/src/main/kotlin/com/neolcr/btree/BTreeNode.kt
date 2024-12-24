@@ -3,7 +3,7 @@ package com.neolcr.btree
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class BTreeNode<K: Comparable<K>, V> (
+data class BTreeNode<K: SerializableKey, V> (
     var keys: MutableList<K> = mutableListOf(),
     var values: MutableList<V> = mutableListOf(),
     var children: MutableList<BTreeNode<K, V>> = mutableListOf(),

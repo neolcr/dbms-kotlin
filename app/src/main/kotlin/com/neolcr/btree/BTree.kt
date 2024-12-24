@@ -3,7 +3,41 @@ package com.neolcr.btree
 import kotlinx.serialization.Serializable
 
 @Serializable
-class BTree<K : Comparable<K>, V>(private val degree: Int) {
+sealed class SerializableKey : Comparable<SerializableKey> {
+    @Serializable
+    data class StringKey(val value: String) : SerializableKey() {
+        override fun compareTo(other: SerializableKey): Int {
+            return when (other) {
+                is StringKey -> value.compareTo(other.value)
+                else -> throw IllegalArgumentException("Cannot compare different key types")
+            }
+        }
+    }
+
+    @Serializable
+    data class IntKey(val value: Int) : SerializableKey() {
+        override fun compareTo(other: SerializableKey): Int {
+            return when (other) {
+                is IntKey -> value.compareTo(other.value)
+                else -> throw IllegalArgumentException("Cannot compare different key types")
+            }
+        }
+    }
+
+    @Serializable
+    data class DoubleKey(val value: Double) : SerializableKey() {
+        override fun compareTo(other: SerializableKey): Int {
+            return when (other) {
+                is DoubleKey -> value.compareTo(other.value)
+                else -> throw IllegalArgumentException("Cannot compare different key types")
+            }
+        }
+    }
+}
+
+
+@Serializable
+class BTree<K : SerializableKey, V>(private val degree: Int) {
 
     var root: BTreeNode<K, V> = BTreeNode()
 

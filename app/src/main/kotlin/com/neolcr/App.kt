@@ -13,7 +13,7 @@ import com.neolcr.sintactico.analisisSintactico
 fun main() {
     testCreateDatabase()
 
-    val btree = BTree<Int, String>(degree = 3)
+    /*val btree = BTree<Int, String>(degree = 3)
 
     btree.insert(10, "Value 10")
     btree.insert(70, "Value 20")
@@ -29,6 +29,8 @@ fun main() {
 
     val loadedBTree = files.loadFromFile<Int, String>("btree.json")
     println("Loaded: ${loadedBTree.root} ")
+
+     */
 /*    val currentDirFile = Paths.get("src/main/kotlin/com/neolcr/query.sql").toAbsolutePath()
     println(currentDirFile)
 	var contenido = Files.readAllLines(currentDirFile).joinToString("");
