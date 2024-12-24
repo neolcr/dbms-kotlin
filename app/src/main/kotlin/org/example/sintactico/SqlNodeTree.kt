@@ -1,8 +1,11 @@
 package org.example.sintactico
 
-import java.util.regex.Matcher
-import java.util.regex.Pattern
+import kotlinx.serialization.Serializable
+//import java.util.regex.Matcher
+//import java.util.regex.Pattern
 
+
+@Serializable
 class SqlNodeTree {
     var value: String? = null
     var kind: Kind
@@ -10,8 +13,8 @@ class SqlNodeTree {
     var nextValue: String? = null
     var previousKind: Kind? = null
     var nextKind: Kind? = null
-    var pattern: Pattern = Pattern.compile("a-zA-Z0-9", Pattern.CASE_INSENSITIVE)
-    var matcher: Matcher? = null
+    //var pattern: Pattern = Pattern.compile("a-zA-Z0-9", Pattern.CASE_INSENSITIVE)
+    //var matcher: Matcher? = null
     var child: SqlNodeTree? = null
 
     override fun toString(): String {

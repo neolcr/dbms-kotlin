@@ -3,6 +3,8 @@ package org.example.sintactico
 import org.example.exceptions.AnalisisSintacticoException
 import java.util.logging.Logger
 import java.util.stream.Collectors
+import kotlinx.serialization.json.*
+import java.io.File
 
 var logger: Logger = Logger.getLogger("Analisis Sintactico: ")
 
@@ -14,6 +16,8 @@ fun getTree(): MutableList<SqlNodeTree>  {
     list.add(SqlNodeTree("FROM", Kind.FROM, Kind.SELECT, Kind.TABLE))
     list.add(SqlNodeTree("", Kind.TABLE, Kind.FROM, Kind.SEMICOLON))
     list.add(SqlNodeTree(";", Kind.SEMICOLON, Kind.TABLE, Kind.END))
+    val encodeToJsonElement: JsonElement = Json.encodeToJsonElement(list)
+    File("localtree.json").writeText(encodeToJsonElement.toString())
     return list
 }
 
