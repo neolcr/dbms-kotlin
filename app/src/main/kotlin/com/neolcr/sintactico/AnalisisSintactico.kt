@@ -8,26 +8,44 @@ import java.io.File
 
 var logger: Logger = Logger.getLogger("Analisis Sintactico: ")
 
-fun getTree(): MutableList<SqlNodeTree>  {
+fun getSelectTree(): MutableList<SqlNodeTree>  {
     val list: MutableList<SqlNodeTree> = ArrayList()
     list.add(SqlNodeTree("SELECT", Kind.SELECT, null, Kind.AST))
-    list.add(SqlNodeTree("SELECT", Kind.SELECT, null, Kind.TABLE))
+    list.add(SqlNodeTree("SELECT", Kind.SELECT, null, Kind.TABLENAME))
     list.add(SqlNodeTree("*", Kind.AST, Kind.SELECT, Kind.FROM))
-    list.add(SqlNodeTree("FROM", Kind.FROM, Kind.SELECT, Kind.TABLE))
-    list.add(SqlNodeTree("", Kind.TABLE, Kind.FROM, Kind.SEMICOLON))
-    list.add(SqlNodeTree(";", Kind.SEMICOLON, Kind.TABLE, Kind.END))
+    list.add(SqlNodeTree("FROM", Kind.FROM, Kind.SELECT, Kind.TABLENAME))
+    list.add(SqlNodeTree("", Kind.TABLENAME, Kind.FROM, Kind.SEMICOLON))
+    list.add(SqlNodeTree(";", Kind.SEMICOLON, Kind.TABLENAME, Kind.END))
     val encodeToJsonElement: JsonElement = Json.encodeToJsonElement(list)
     File("structure.json").writeText(encodeToJsonElement.toString())
     return list
 }
 
-fun getStructure(): MutableList<SqlNodeTree> {
+fun getCreateDBTree(): MutableList<SqlNodeTree>  {
+    val list: MutableList<SqlNodeTree> = ArrayList()
+    list.add(SqlNodeTree("CREATE", Kind.CREATE, null, Kind.DATABASE))
+    list.add(SqlNodeTree("DATABASE", Kind.DATABASE, Kind.CREATE, Kind.DATABASENAME))
+    list.add(SqlNodeTree("", Kind.DATABASENAME, Kind.DATABASE, Kind.SEMICOLON))
+    list.add(SqlNodeTree(";", Kind.SEMICOLON, Kind.DATABASENAME, Kind.END))
+    val encodeToJsonElement: JsonElement = Json.encodeToJsonElement(list)
+    File("db-structure.json").writeText(encodeToJsonElement.toString())
+    return list
+}
+fun getSelectStructure(): MutableList<SqlNodeTree> {
     val json = File("structure.json").readText()
     return Json.decodeFromString(json)
 }
 
 fun analisisSintactico(elements: MutableList<String> ): SqlNodeTree {
-    val list = getStructure()
+    val list = when (elements.first().uppercase()) {
+        "SELECT" -> getSelectTree()
+        "CREATE" -> when (elements[1].uppercase()) {
+            "TABLE" -> getSelectStructure()
+            "DATABASE" ->getCreateDBTree()
+            else -> throw AnalisisSintacticoException("Valor incorrecto")
+        }
+        else -> throw AnalisisSintacticoException("Valor incorrecto")
+    }
     var futuresMatchingValueOrType: List<SqlNodeTree>
     var matchCurrentValue = list.stream()
         .filter { it: SqlNodeTree -> it.value.equals(list.first().value, ignoreCase = true) }
@@ -56,13 +74,13 @@ fun analisisSintactico(elements: MutableList<String> ): SqlNodeTree {
 
         if (matchCurrentValue.isEmpty()) {
             matchCurrentValue = futuresMatchingValueOrType.stream()
-                .filter { it: SqlNodeTree -> it.kind == Kind.TABLE }
+                .filter { it: SqlNodeTree -> listOf(Kind.TABLENAME, Kind.DATABASENAME).contains(it.kind)}
                 .toList()
         }
         val nextTypes = matchCurrentValue.stream().map { it: SqlNodeTree -> it.nextKind }.toList()
         val nextValues = matchCurrentValue.stream().map { it: SqlNodeTree -> it.nextValue }.toList()
 
-        if (matchCurrentValue.first().kind.equals(Kind.TABLE)){
+        if (listOf(Kind.TABLENAME, Kind.DATABASENAME).contains(matchCurrentValue.first().kind)){
             matchCurrentValue.first().value = element
         }
         pushNode(root, matchCurrentValue.first())

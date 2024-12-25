@@ -11,7 +11,7 @@ import com.neolcr.sintactico.analisisSintactico
 
 
 fun main() {
-    testCreateDatabase()
+    //testCreateDatabase()
 
     /*val btree = BTree<Int, String>(degree = 3)
 
@@ -31,7 +31,7 @@ fun main() {
     println("Loaded: ${loadedBTree.root} ")
 
      */
-/*    val currentDirFile = Paths.get("src/main/kotlin/com/neolcr/query.sql").toAbsolutePath()
+    val currentDirFile = Paths.get("src/main/kotlin/com/neolcr/query.sql").toAbsolutePath()
     println(currentDirFile)
 	var contenido = Files.readAllLines(currentDirFile).joinToString("");
     println("Primera lectura: $contenido")
@@ -45,7 +45,7 @@ fun main() {
     val estructura = analisisSintactico(lista_final_tokens)
     println("Final structure: $estructura")
 
- */
+
 }
 
 

@@ -7,7 +7,7 @@ enum class Kind {
     INSERT,
     DELETE,
     CREATE,
-    TABLE,
+    TABLENAME,
     DATABASE,
     COLUMN,
     IDENTIFIER,
@@ -17,5 +17,7 @@ enum class Kind {
     SEMICOLON,
     END,
     UNKNOWN,
-    ROOT
+    ROOT,
+    DATABASENAME,
+    TABLE,
 }

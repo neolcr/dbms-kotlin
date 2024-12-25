@@ -1,1 +1,1 @@
-select * from tabla;
+create database experimento1;

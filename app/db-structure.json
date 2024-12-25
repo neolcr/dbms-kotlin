@@ -1,0 +1,1 @@
+[{"value":"CREATE","kind":"CREATE","nextKind":"DATABASE"},{"value":"DATABASE","kind":"DATABASE","previousKind":"CREATE","nextKind":"DATABASENAME"},{"value":"","kind":"DATABASENAME","previousKind":"DATABASE","nextKind":"SEMICOLON"},{"value":";","kind":"SEMICOLON","previousKind":"DATABASENAME","nextKind":"END"}]
